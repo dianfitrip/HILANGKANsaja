@@ -1,0 +1,160 @@
+<%- include('partials/header', { title: "Prosedur | Lost & Found UMY", activePage: "prosedur" }) %>
+
+<div class="relative w-full h-[300px] md:h-[400px]">
+    <img src="/images/potoUMY.jpeg" alt="Hero UMY" class="w-full h-full object-cover">
+    <div class="absolute inset-0 bg-black/40"></div>
+    <div class="absolute inset-0 flex items-center justify-center">
+        
+    </div>
+</div>
+
+<main class="container mx-auto px-6 py-12 bg-gray-50 min-h-screen">
+    <div class="max-w-6xl mx-auto">
+
+        <div class="mb-14 text-center max-w-4xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-6 uppercase border-b-4 border-yellow-400 inline-block pb-2">
+                Prosedur Layanan Lost & Found UMY
+            </h2>
+            
+            <p class="text-xl md:text-2xl text-gray-700 font-medium leading-relaxed mt-4">
+                Berikut adalah Standar Operasional Prosedur (SOP) yang harus diikuti oleh seluruh civitas akademika Universitas Muhammadiyah Yogyakarta terkait layanan pelaporan kehilangan dan penemuan barang.
+            </p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+            <div class="bg-white p-8 rounded-xl shadow-lg border-t-4 border-red-600 hover:shadow-xl transition duration-300 transform hover:-translate-y-1">
+                <div class="flex items-center gap-3 mb-6 border-b pb-4">
+                    <div class="bg-red-100 p-3 rounded-full text-red-600">
+                        <i class="ri-search-eye-line text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800">Jika Anda Kehilangan Barang</h3>
+                </div>
+
+                <ol class="relative border-l border-gray-200 ml-3 space-y-8">                  
+                    <li class="ml-6">
+                        <span class="absolute flex items-center justify-center w-8 h-8 bg-red-100 rounded-full -left-4 ring-4 ring-white">
+                            <span class="text-red-600 font-bold">1</span>
+                        </span>
+                        <h4 class="font-bold text-gray-900 mb-1 text-lg">Pencarian Mandiri (WAJIB)</h4>
+                        <p class="text-gray-600 mb-2">Sebelum membuat laporan baru, pelapor diwajibkan melakukan pengecekan daftar barang temuan terlebih dahulu.</p>
+                        <ul class="list-disc ml-4 text-gray-600 space-y-1">
+                            <li>Akses menu <strong>"List Barang Temuan"</strong> pada website ini.</li>
+                            <li>Gunakan fitur pencarian dengan kata kunci spesifik untuk memastikan apakah barang Anda sudah diamankan oleh petugas.</li>
+                        </ul>
+                    </li>
+                    <li class="ml-6">
+                        <span class="absolute flex items-center justify-center w-8 h-8 bg-red-100 rounded-full -left-4 ring-4 ring-white">
+                            <span class="text-red-600 font-bold">2</span>
+                        </span>
+                        <h4 class="font-bold text-gray-900 mb-1 text-lg">Pengajuan Laporan Kehilangan</h4>
+                        <ul class="list-disc ml-4 text-gray-600 space-y-1">
+                            <li>Apabila barang <strong>TIDAK DITEMUKAN</strong> pada list, silakan buka menu "Layanan Mandiri".</li>
+                            <li>Pilih opsi "Kehilangan Barang" lalu isi formulir kronologi kejadian, ciri-ciri barang, dan lokasi terakhir dilihat secara lengkap.</li>
+                        </ul>
+                    </li>
+                    <li class="ml-6">
+                        <span class="absolute flex items-center justify-center w-8 h-8 bg-red-100 rounded-full -left-4 ring-4 ring-white">
+                            <span class="text-red-600 font-bold">3</span>
+                        </span>
+                        <h4 class="font-bold text-gray-900 mb-1 text-lg">Verifikasi & Pemantauan</h4>
+                        <p class="text-gray-600">Laporan Anda akan masuk ke proses verifikasi Admin. Pastikan nomor WhatsApp aktif agar kami dapat segera menghubungi Anda apabila ada kecocokan data barang temuan.</p>
+                    </li>
+                </ol>
+            </div>
+
+            <div class="flex flex-col gap-8">
+
+                <div class="bg-white p-8 rounded-xl shadow-lg border-t-4 border-green-600 hover:shadow-xl transition duration-300 transform hover:-translate-y-1">
+                    <div class="flex items-center gap-3 mb-6 border-b pb-4">
+                        <div class="bg-green-100 p-3 rounded-full text-green-600">
+                            <i class="ri-hand-heart-line text-2xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800">Jika Menemukan Barang</h3>
+                    </div>
+
+                    <ul class="space-y-5 text-gray-700">
+                        <li class="flex gap-4">
+                            <i class="ri-checkbox-circle-line text-green-500 text-2xl mt-0.5"></i>
+                            <div>
+                                <strong class="block text-gray-900 text-lg">Segera Laporkan Penemuan</strong>
+                                <span>Bagi civitas akademika yang menemukan barang tertinggal, mohon segera melapor melalui menu "Layanan Mandiri" lalu pilih "Menemukan Barang".</span>
+                            </div>
+                        </li>
+                        <li class="flex gap-4">
+                            <i class="ri-image-add-line text-green-500 text-2xl mt-0.5"></i>
+                            <div>
+                                <strong class="block text-gray-900 text-lg">Dokumentasi & Detail Barang</strong>
+                                <span>Unggah foto barang dengan pencahayaan jelas. Sertakan deskripsi kondisi fisik dan lokasi spesifik penemuan untuk memudahkan identifikasi pemilik.</span>
+                            </div>
+                        </li>
+                        <li class="flex gap-4">
+                            <i class="ri-database-2-line text-green-500 text-2xl mt-0.5"></i>
+                            <div>
+                                <strong class="block text-gray-900 text-lg">Verifikasi</strong>
+                                <span>Setelah Laporan Anda masuk, Admin akan verifikasi data tersebut untuk ditampilkan di publik.</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-white p-8 rounded-xl shadow-lg border-t-4 border-blue-600 hover:shadow-xl transition duration-300 transform hover:-translate-y-1">
+                    <div class="flex items-center gap-3 mb-6 border-b pb-4">
+                        <div class="bg-blue-100 p-3 rounded-full text-blue-600">
+                            <i class="ri-user-follow-line text-2xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800">Prosedur Pengambilan Barang</h3>
+                    </div>
+
+                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-5">
+                        <p class="text-blue-800 italic font-medium">"Barang saya terdata di List Temuan, bagaimana cara mengambilnya?"</p>
+                    </div>
+
+                    <ul class="space-y-3 text-gray-700">
+                        <li class="flex items-center gap-3">
+                            <i class="ri-arrow-right-circle-fill text-blue-500 text-xl"></i>
+                            <span>Datang langsung ke Sekretariat Lost & Found UMY atau hubungi kontak Admin yang tertera.</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="ri-arrow-right-circle-fill text-blue-500 text-xl"></i>
+                            <span>Wajib membawa identitas asli: <strong>KTM (Mahasiswa)</strong> atau <strong>KTP/SIM (Umum)</strong>.</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="ri-arrow-right-circle-fill text-blue-500 text-xl"></i>
+                            <span>Verifikasi: Admin akan mencocokkan ciri-ciri khusus barang sebelum serah terima dilakukan.</span>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="mt-14">
+            <div class="bg-red-50 border-l-8 border-red-500 rounded-r-xl shadow-sm p-8 flex flex-col md:flex-row items-start md:items-center gap-6">
+                
+                <div class="hidden md:flex bg-red-100 p-5 rounded-full flex-shrink-0 animate-pulse">
+                    <i class="ri-alarm-warning-fill text-5xl text-red-600"></i>
+                </div>
+
+                <div class="flex-grow">
+                    <h3 class="text-2xl font-bold text-red-700 mb-3 flex items-center gap-2">
+                        <i class="ri-alarm-warning-fill md:hidden"></i> 
+                        WASPADA PENIPUAN!
+                    </h3>
+                    <p class="text-gray-800 text-lg leading-relaxed mb-4">
+                        Seluruh layanan Lost & Found Universitas Muhammadiyah Yogyakarta adalah 
+                        <span class="font-black text-white bg-red-600 px-2 py-0.5 rounded shadow-sm">100% GRATIS</span>. 
+                        Kami tidak pernah meminta biaya administrasi, biaya transfer, atau imbalan uang tebusan dalam bentuk apapun untuk pengembalian barang.
+                    </p>
+                    <div class="flex items-center gap-2 text-red-700 font-bold italic bg-red-100 p-3 rounded-lg inline-block">
+                        <i class="ri-shield-check-line text-xl"></i>
+                        <span>Abaikan pihak yang meminta transfer uang mengatasnamakan UMY!</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<%- include('partials/footer') %>

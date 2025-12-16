@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lost & Found UMY</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        umygreen: '#347433',
+                        umyred: '#B22222',
+                        umygreenlight: '#4a8a49',
+                        umyfooter: '#2d662c',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .filter-white {
+            filter: brightness(0) invert(1);
+        }
+        
+        
+        input:required:invalid:not(:focus),
+        select:required:invalid:not(:focus),
+        textarea:required:invalid:not(:focus) {
+            border-color: #EF4444; 
+            border-width: 2px; 
+            box-shadow: 0 0 0 1px #EF4444;
+        }
+
+        input[type="file"]:required:invalid {
+             border-color: #EF4444;
+             border-width: 2px;
+             box-shadow: 0 0 0 1px #EF4444;
+        }
+
+        
+        input:valid,
+        select:valid,
+        textarea:valid {
+            
+        }
+        
+
+        
+    </style>
+</head>
+
+<body class="bg-gray-50 font-sans flex flex-col min-h-screen">
+
+<nav class="bg-white relative z-30">
+    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+
+        <div class="flex items-center gap-4">
+            <img src="/images/LogoUMY.png" alt="Logo UMY" class="h-14">
+
+            <div class="flex items-center gap-4">
+                <div class="h-10 w-0.5 bg-gray-300 hidden md:block"></div>
+
+                <div class="text-red-600 font-black text-xl md:text-2xl tracking-tighter">
+                    LOST & FOUND
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="bg-umygreen text-white shadow-md relative z-20">
+        <div class="container mx-auto px-6 py-3 flex justify-center items-center gap-8 text-sm font-bold tracking-wide">
+
+            <a href="/" class="<%= (activePage === 'home') ? 'text-yellow-300 border-b-2 border-yellow-300' : 'hover:text-yellow-300' %> transition py-2">
+                HOME
+            </a>
+
+            <a href="/prosedur" class="<%= (activePage === 'prosedur') ? 'text-yellow-300 border-b-2 border-yellow-300' : 'hover:text-yellow-300' %> transition py-2">
+                PROSEDUR
+            </a>
+
+            <a href="/list-barang-temuan" class="<%= (activePage === 'list-barang-temuan') ? 'text-yellow-300 border-b-2 border-yellow-300' : 'hover:text-yellow-300' %> transition py-2">
+                LIST BARANG TEMUAN
+            </a>
+
+            <div class="relative group">
+
+                <button class="bg-white text-umygreen hover:bg-gray-100 transition px-4 py-2 rounded shadow-sm flex items-center gap-2">
+                    LAYANAN MANDIRI
+                    <i class="ri-arrow-down-s-line text-lg"></i>
+                </button>
+
+                <div class="absolute right-0 top-full pt-2 w-56 hidden group-hover:block z-50">
+                    <div class="bg-white border rounded-md shadow-xl overflow-hidden text-gray-800">
+
+                        <a href="/form-kehilangan" class="block px-4 py-3 hover:bg-gray-100 border-b text-sm font-normal transition">
+                            Kehilangan Barang
+                        </a>
+
+                        <a href="/form-penemuan" class="block px-4 py-3 hover:bg-gray-100 border-b text-sm font-normal transition">
+                            Menemukan Barang
+                        </a>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</nav>
+

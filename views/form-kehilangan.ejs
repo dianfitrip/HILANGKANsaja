@@ -1,0 +1,266 @@
+<%
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayFormatted = `${yyyy}-${mm}-${dd}`;
+%>
+
+<%- include('partials/header', { title: "Form Kehilangan | Lost & Found UMY", activePage: "layanan-mandiri" }) %>
+
+<div class="bg-umygreen text-white py-8">
+    <div class="container mx-auto px-6">
+        <h1 class="text-3xl font-bold">Lapor Kehilangan Barang</h1>
+        <p class="text-yellow-300 mt-2">Laporkan barang yang hilang di area kampus UMY.</p>
+    </div>
+</div>
+
+<main class="container mx-auto px-6 py-10 max-w-4xl relative">
+    <div class="bg-white p-8 rounded-lg shadow-lg border border-gray-200">
+        <form id="form-lapor" enctype="multipart/form-data" novalidate>
+            
+            <h2 class="text-xl font-bold text-gray-800 mb-6 border-b pb-2">Identitas Pelapor</h2>
+
+            <div class="mb-6">
+                <label class="block text-gray-700 font-bold mb-2">Nama<span class="text-umyred">*</span></label>
+                <input type="text" name="reporter_name" maxlength="50" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')"
+                    class="w-full bg-gray-100 border border-gray-300 rounded px-4 py-3 focus:outline-none focus:bg-white focus:border-umygreen transition"
+                    placeholder="Masukkan nama lengkap Anda">
+                <p id="error-reporter_name" class="text-red-600 text-sm font-bold mt-2 hidden"></p>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-gray-700 font-bold mb-2">Status Pelapor<span class="text-umyred">*</span></label>
+                <div class="bg-gray-100 p-4 rounded border border-gray-300 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <label class="flex items-center space-x-3 cursor-pointer"><input type="radio" name="reporter_status" value="mahasiswa" class="form-radio text-umygreen h-5 w-5" checked onchange="updateIdentityRules()"><span>Mahasiswa</span></label>
+                    <label class="flex items-center space-x-3 cursor-pointer"><input type="radio" name="reporter_status" value="dosen" class="form-radio text-umygreen h-5 w-5" onchange="updateIdentityRules()"><span>Dosen</span></label>
+                    <label class="flex items-center space-x-3 cursor-pointer"><input type="radio" name="reporter_status" value="tendik" class="form-radio text-umygreen h-5 w-5" onchange="updateIdentityRules()"><span>Tenaga Kependidikan</span></label>
+                    <label class="flex items-center space-x-3 cursor-pointer"><input type="radio" name="reporter_status" value="foreign_student" class="form-radio text-umygreen h-5 w-5" onchange="updateIdentityRules()"><span>Foreign Student</span></label>
+                    <label class="flex items-center space-x-3 cursor-pointer"><input type="radio" name="reporter_status" value="lainnya" class="form-radio text-umygreen h-5 w-5" onchange="updateIdentityRules()"><span>Lainnya</span></label>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <label id="label-identitas" class="block text-gray-700 font-bold mb-2">NIM<span class="text-umyred">*</span></label>
+                <input type="text" name="identification_number" id="input-identitas"
+                    class="w-full bg-gray-100 border border-gray-300 rounded px-4 py-3 focus:outline-none focus:bg-white focus:border-umygreen transition"
+                    placeholder="Masukkan Nomor Induk Mahasiswa Anda">
+                <p id="error-identification_number" class="text-red-600 text-sm font-bold mt-2 hidden"></p>
+            </div>
+
+            <h2 class="text-xl font-bold text-gray-800 mb-6 border-b pb-2 pt-4">Data Barang Kehilangan</h2>
+
+            <div class="mb-6">
+                <label class="block text-gray-700 font-bold mb-2">Kategori Barang<span class="text-umyred">*</span></label>
+                <div class="relative">
+                    <select name="category_id" class="w-full bg-gray-100 border border-gray-300 rounded px-4 py-3 appearance-none focus:outline-none focus:bg-white focus:border-umygreen cursor-pointer">
+                        <option value="" disabled selected>Pilih Kategori Barang</option>
+                        <% categories.forEach(function(cat) { %><option value="<%= cat.id %>"><%= cat.name %></option><% }); %>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-700"><i class="ri-arrow-down-s-line"></i></div>
+                </div>
+                <p id="error-category_id" class="text-red-600 text-sm font-bold mt-2 hidden"></p>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-gray-700 font-bold mb-2">Nama Barang<span class="text-umyred">*</span></label>
+                <input type="text" name="item_name" maxlength="100" class="w-full bg-gray-100 border border-gray-300 rounded px-4 py-3 focus:outline-none focus:bg-white focus:border-umygreen" placeholder="Contoh: Dompet kulit coklat">
+                <p id="error-item_name" class="text-red-600 text-sm font-bold mt-2 hidden"></p>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-gray-700 font-bold mb-2">Deskripsi Detail<span class="text-umyred">*</span></label>
+                <textarea name="description" rows="4" class="w-full bg-gray-100 border border-gray-300 rounded px-4 py-3 focus:outline-none focus:bg-white focus:border-umygreen" placeholder="Jelaskan ciri-ciri khusus..."></textarea>
+                <p id="error-description" class="text-red-600 text-sm font-bold mt-2 hidden"></p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <label class="block text-gray-700 font-bold mb-2">Tanggal Kehilangan<span class="text-umyred">*</span></label>
+                    <input type="date" name="date_event" max="<%= todayFormatted %>" class="w-full bg-gray-100 border border-gray-300 rounded px-4 py-3 focus:outline-none focus:bg-white focus:border-umygreen">
+                    <p id="error-date_event" class="text-red-600 text-sm font-bold mt-2 hidden"></p>
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-bold mb-2">Lokasi Kehilangan<span class="text-umyred">*</span></label>
+                    <input type="text" name="location" class="w-full bg-gray-100 border border-gray-300 rounded px-4 py-3 focus:outline-none focus:bg-white focus:border-umygreen" placeholder="Contoh: Parkir utara">
+                    <p id="error-location" class="text-red-600 text-sm font-bold mt-2 hidden"></p>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <label class="block text-gray-700 font-bold mb-2">Foto Barang (Opsional)</label>
+                <div class="flex items-center justify-center w-full">
+                    <label for="dropzone-file-lost" class="flex flex-col items-center justify-center w-full h-48 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition overflow-hidden relative p-4">
+                        <div id="upload-placeholder-lost" class="flex flex-col items-center justify-center pt-5 pb-6 text-center w-full">
+                            <i class="ri-upload-cloud-2-line text-3xl text-gray-400 mb-2"></i>
+                            <p class="text-sm text-gray-500"><span class="font-semibold">Klik di sini untuk unggah foto</span></p>
+                        </div>
+                        <div id="file-preview-area-lost" class="hidden absolute inset-0 flex flex-col justify-between w-full h-full bg-white p-3">
+                            <div class="flex justify-center flex-grow items-center overflow-hidden border border-gray-200 rounded-lg"><img id="image-preview-lost" src="#" alt="Preview" class="max-w-full max-h-full object-contain"></div>
+                            <div class="flex justify-between items-center mt-2">
+                                <p id="file-name-lost" class="text-sm font-semibold text-gray-800 truncate w-32"></p>
+                                <button type="button" id="clear-file-btn-lost" class="text-red-500 hover:text-red-700 transition" onclick="clearFileLost('dropzone-file-lost', 'image-preview-lost', 'upload-placeholder-lost', 'file-preview-area-lost', 'file-name-lost')"><i class="ri-close-circle-fill text-2xl"></i></button>
+                            </div>
+                        </div>
+                        <input id="dropzone-file-lost" name="item_image" type="file" class="hidden" accept="image/png, image/jpeg, image/jpg" onchange="previewImageLost(event, 'image-preview-lost', 'upload-placeholder-lost', 'file-preview-area-lost', 'file-name-lost')" />
+                    </label>
+                </div>
+            </div>
+
+            <h2 class="text-xl font-bold text-gray-800 mb-6 border-b pb-2 pt-4">Verifikasi Kontak</h2>
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2">Email Aktif<span class="text-umyred">*</span> <span class="font-normal text-sm text-gray-500">(Wajib @gmail.com)</span></label>
+                <div class="flex flex-col md:flex-row gap-2">
+                    <input type="email" id="input-email-lost" name="reporter_email" class="w-full bg-gray-100 border border-gray-300 rounded px-4 py-3 focus:outline-none focus:bg-white focus:border-umygreen" placeholder="email@gmail.com">
+                    <button type="button" onclick="validateEmailLost()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-4 rounded border border-gray-300 transition whitespace-nowrap">Kirim Kode</button>
+                </div>
+                <p id="error-reporter_email" class="text-red-600 text-sm font-bold mt-2 hidden"></p>
+                <p id="email-success-msg-lost" class="text-green-600 text-sm font-bold mt-2 hidden"></p>
+            </div>
+
+            <div class="mb-10">
+                <label class="block text-gray-700 font-bold mb-2">Kode OTP</label>
+                <div class="flex gap-2">
+                    <input type="text" id="input-otp-lost" name="otp_code" maxlength="6" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-gray-100 border border-gray-300 rounded px-4 py-3 focus:outline-none focus:bg-white focus:border-umygreen" placeholder="Masukkan kode 6 digit">
+                    <button type="button" onclick="cekKodeOtpLost()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded border border-gray-300 transition whitespace-nowrap">Verifikasi</button>
+                </div>
+                <p id="error-otp_code" class="text-red-600 text-sm font-bold mt-2 hidden"></p>
+                <p id="otp-msg-lost" class="text-sm font-bold mt-2 hidden"></p>
+            </div>
+
+            <div class="flex flex-col-reverse md:flex-row justify-end gap-4">
+                <a href="/" class="text-center w-full md:w-auto bg-red-700 hover:bg-red-800 text-white font-bold py-3 px-8 rounded shadow transition">Batal</a>
+                <button type="submit" class="w-full md:w-auto bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-3 px-8 rounded shadow transition">Laporkan Kehilangan</button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<div id="success-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm transition-opacity">
+    <div class="bg-white rounded-xl shadow-2xl p-8 max-w-sm w-full text-center">
+        <div class="mb-5 flex justify-center"><div class="bg-green-100 p-3 rounded-full"><i class="ri-checkbox-circle-fill text-green-600 text-6xl"></i></div></div>
+        <h3 class="text-2xl font-bold mb-2 text-gray-800">Laporan Terkirim!</h3>
+        <p id="modal-message" class="text-gray-600 mb-8">Data Anda berhasil disimpan.</p>
+        <div class="flex flex-col gap-3">
+            <a href="/list-barang-temuan" class="w-full bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-3 px-4 rounded-lg shadow-md flex justify-center gap-2"><i class="ri-list-check"></i> Lihat List Barang</a>
+            <a href="/" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-lg flex justify-center gap-2"><i class="ri-home-4-line"></i> Kembali ke Home</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function clearFileLost(inputId, previewId, placeholderId, previewAreaId, fileNameId) {
+        document.getElementById(inputId).value = '';
+        document.getElementById(previewAreaId).classList.add('hidden');
+        document.getElementById(placeholderId).classList.remove('hidden');
+        document.getElementById(fileNameId).innerText = '';
+    }
+    function previewImageLost(event, previewId, placeholderId, previewAreaId, fileNameId) {
+        const input = event.target;
+        if (input.files && input.files[0]) {
+            if (input.files[0].size > 2*1024*1024) { alert('File terlalu besar!'); clearFileLost(input.id, previewId, placeholderId, previewAreaId, fileNameId); return; }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById(previewId).src = e.target.result;
+                document.getElementById(fileNameId).innerText = input.files[0].name;
+                document.getElementById(placeholderId).classList.add('hidden');
+                document.getElementById(previewAreaId).classList.remove('hidden');
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    
+    // [UPDATE PENTING] Hapus minLength dan Fix Passport Logic
+    function updateIdentityRules() {
+        const status = document.querySelector('input[name="reporter_status"]:checked').value;
+        const label = document.getElementById('label-identitas');
+        const input = document.getElementById('input-identitas');
+        input.value = ""; 
+        
+        // [UPDATE] HAPUS SEMUA BATASAN BROWSER
+        input.removeAttribute('maxlength'); 
+        input.removeAttribute('minlength'); 
+        input.removeAttribute('oninput'); 
+        
+        document.getElementById('error-identification_number').classList.add('hidden');
+        input.classList.remove('border-red-500');
+
+        if (status === 'mahasiswa') { 
+            label.innerHTML = 'NIM<span class="text-umyred">*</span> (11 Digit)'; 
+            input.placeholder = 'ex. 20210140001'; 
+            input.maxLength = 11; 
+            input.setAttribute('oninput', "this.value = this.value.replace(/[^0-9]/g, '')"); // Angka
+        }
+        else if (status === 'lainnya') { 
+            label.innerHTML = 'NIK KTP<span class="text-umyred">*</span> (16 Digit)'; 
+            input.placeholder = '16 digit NIK'; 
+            input.maxLength = 16; 
+            input.setAttribute('oninput', "this.value = this.value.replace(/[^0-9]/g, '')"); // Angka
+        }
+        else if (status === 'foreign_student') {
+            label.innerHTML = 'Passport Number<span class="text-umyred">*</span>'; 
+            input.placeholder = 'Enter your Passport Number'; 
+            input.maxLength = 10; 
+            // [FIX] Paspor bisa huruf, jadi HAPUS oninput replace angka
+        }
+        else { 
+            label.innerHTML = 'NIP / NIK Pegawai<span class="text-umyred">*</span>'; 
+            input.placeholder = 'Nomor Identitas'; 
+            input.maxLength = 18; 
+            input.setAttribute('oninput', "this.value = this.value.replace(/[^0-9]/g, '')"); // Angka
+        }
+    }
+    
+    function validateEmailLost() { 
+        const email = document.getElementById('input-email-lost').value;
+        document.getElementById('error-reporter_email').classList.add('hidden');
+        if (!email) { document.getElementById('error-reporter_email').innerText="Email wajib diisi"; document.getElementById('error-reporter_email').classList.remove('hidden'); return; }
+        
+        fetch('/api/send-otp', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({email}) })
+        .then(res=>res.json()).then(data=>{ if(data.success){ document.getElementById('email-success-msg-lost').classList.remove('hidden'); document.getElementById('email-success-msg-lost').innerText = 'Kode terkirim! Cek terminal.'; } else { alert(data.message); } });
+    }
+    function cekKodeOtpLost() { 
+        const email = document.getElementById('input-email-lost').value;
+        const otp = document.getElementById('input-otp-lost').value;
+        fetch('/api/verify-otp', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({email, otp_code: otp}) })
+        .then(res=>res.json()).then(data=>{ 
+            const msg = document.getElementById('otp-msg-lost'); msg.classList.remove('hidden', 'text-red-600', 'text-green-600');
+            msg.innerText = data.message; msg.classList.add(data.success ? 'text-green-600' : 'text-red-600');
+        });
+    }
+
+    document.getElementById('form-lapor').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        document.querySelectorAll('p[id^="error-"]').forEach(el => el.classList.add('hidden'));
+        document.querySelectorAll('input, textarea, select').forEach(el => el.classList.remove('border-red-500'));
+
+        const formData = new FormData(this);
+        fetch('/submit-kehilangan', { method: 'POST', body: formData })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('success-modal').classList.remove('hidden');
+            } else {
+                if (data.field) {
+                    const errorEl = document.getElementById('error-' + data.field);
+                    const inputEl = document.querySelector(`[name="${data.field}"]`);
+                    
+                    if (errorEl) {
+                        errorEl.innerText = "❌ " + data.message;
+                        errorEl.classList.remove('hidden');
+                    }
+                    if (inputEl) {
+                        inputEl.classList.add('border-red-500');
+                        inputEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                } else {
+                    alert("❌ " + data.message);
+                }
+            }
+        });
+    });
+    
+    document.addEventListener("DOMContentLoaded", updateIdentityRules);
+</script>
+<%- include('partials/footer') %>

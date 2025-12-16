@@ -1,0 +1,88 @@
+<%- include('partials/header', { title: "List Barang Temuan | Lost & Found UMY", activePage: "list-barang-temuan" }) %>
+
+<div class="bg-white border-b border-gray-200 mt-6 mb-8">
+    <div class="container mx-auto px-6 py-4">
+        <h1 class="text-3xl font-serif font-bold text-gray-800">Daftar Barang Temuan</h1>
+    </div>
+</div>
+
+<main class="container mx-auto px-6 pb-20 min-h-screen">
+
+    <div class="mb-6">
+        <form action="/list-barang-temuan" method="GET" class="flex flex-col md:flex-row gap-0 border border-gray-400 rounded-sm overflow-hidden w-full md:w-2/3 ml-auto">
+            
+            <input type="text" name="search" value="<%= searchQuery %>" placeholder="Cari..." 
+                class="flex-grow px-4 py-2 bg-gray-200 text-gray-700 focus:outline-none placeholder-gray-500 border-r border-gray-400">
+
+            <select name="category" onchange="this.form.submit()" 
+                class="w-full md:w-48 px-4 py-2 bg-gray-200 text-gray-700 focus:outline-none cursor-pointer">
+                <option value="">Kategori &#9662;</option> <% categories.forEach(cat => { %>
+                    <option value="<%= cat.id %>" <%= categoryFilter == cat.id ? 'selected' : '' %>>
+                        <%= cat.name %>
+                    </option>
+                <% }) %>
+            </select>
+            
+            <button type="submit" class="hidden"></button>
+        </form>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full border-collapse border border-black text-left font-sans">
+            <thead>
+                <tr class="bg-white">
+                    <th class="border border-black px-4 py-3 font-bold text-center w-16">No</th>
+                    <th class="border border-black px-4 py-3 font-bold w-1/4">Nama Barang</th>
+                    <th class="border border-black px-4 py-3 font-bold w-1/5">Waktu Ditemukan</th>
+                    <th class="border border-black px-4 py-3 font-bold w-1/3">Deskripsi</th>
+                    <th class="border border-black px-4 py-3 font-bold w-1/6">Lokasi</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                <% if (reports.length === 0) { %>
+                    <tr>
+                        <td colspan="5" class="border border-black px-4 py-8 text-center text-gray-500 italic">
+                            Data tidak ditemukan.
+                        </td>
+                    </tr>
+                <% } else { %>
+                    
+                    <% reports.forEach((item, index) => { %>
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="border border-black px-4 py-3 text-center font-bold">
+                            <%= index + 1 %>
+                        </td>
+                        
+                        <td class="border border-black px-4 py-3 font-bold">
+                            <%= item.item_name %>
+                            <div class="text-xs font-normal text-gray-500 mt-1">
+                                <%= item.category_name %>
+                            </div>
+                        </td>
+                        
+                        <td class="border border-black px-4 py-3">
+                            <%= new Date(item.date_event).toLocaleDateString('id-ID', { 
+                                day: 'numeric', month: 'long', year: 'numeric' 
+                            }) %>
+                        </td>
+                        
+                        <td class="border border-black px-4 py-3">
+                            <%= item.description %>
+                        </td>
+                        
+                        <td class="border border-black px-4 py-3 font-bold">
+                            <%= item.location %>
+                        </td>
+                    </tr>
+                    <% }); %>
+
+                <% } %>
+
+            </tbody>
+        </table>
+    </div>
+
+</main>
+
+<%- include('partials/footer') %>

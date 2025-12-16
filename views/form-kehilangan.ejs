@@ -251,6 +251,7 @@
             if (data.success) {
                 document.getElementById('success-modal').classList.remove('hidden');
             } else {
+                // PERBAIKAN LOGIKA ERROR HANDLING
                 if (data.field) {
                     const errorEl = document.getElementById('error-' + data.field);
                     const inputEl = document.querySelector(`[name="${data.field}"]`);
@@ -258,7 +259,11 @@
                     if (errorEl) {
                         errorEl.innerText = "❌ " + data.message;
                         errorEl.classList.remove('hidden');
+                    } else {
+                        // JIKA ELEMENT ERROR TIDAK KETEMU (MISAL ERROR DATABASE GENERAL), TAMPILKAN ALERT
+                        alert("❌ Terjadi Kesalahan: " + data.message);
                     }
+
                     if (inputEl) {
                         inputEl.classList.add('border-red-500');
                         inputEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -272,4 +277,3 @@
     
     document.addEventListener("DOMContentLoaded", updateIdentityRules);
 </script>
-<%- include('partials/footer') %>

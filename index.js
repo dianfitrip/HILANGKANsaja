@@ -63,49 +63,22 @@ app.get('/form-kehilangan', (req, res) => {
     res.render('form-kehilangan', { categories: categories });
 });
 
-// --- 5. API: KIRIM OTP ---
-app.post('/api/send-otp', (req, res) => {
-    const { email } = req.body;
-    if (!email) return res.json({ success: false, message: 'Email tidak boleh kosong.' });
-
-    const otpCode = Math.floor(100000 + Math.random() * 900000);
-    const query = `INSERT INTO verification_codes (email, otp_code, expires_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 5 MINUTE))`;
-
-    db.query(query, [email, otpCode], (err, result) => {
-        if (err) {
-            console.error(err);
-            return res.json({ success: false, message: 'Database Error' });
-        }
-        console.log(`OTP untuk ${email}: ${otpCode}`); 
-        res.json({ success: true, message: 'Kode OTP terkirim!', debug_otp: otpCode });
-    });
-});
-
-app.post('/api/verify-otp', (req, res) => {
-    const { email, otp_code } = req.body;
-    if (!email || !otp_code) return res.json({ success: false, message: 'Email dan Kode OTP wajib diisi.' });
-
-    const query = `SELECT * FROM verification_codes WHERE email = ? AND otp_code = ? AND expires_at > NOW()`;
-    db.query(query, [email, otp_code], (err, results) => {
-        if (err) return res.json({ success: false, message: 'Database Error' });
-        if (results.length > 0) res.json({ success: true, message: 'Kode Valid!' });
-        else res.json({ success: false, message: 'Kode Salah atau sudah Kadaluarsa.' });
-    });
-});
-
-// --- FUNGSI VALIDASI BACKEND (SUPER LENGKAP) ---
-function validateRequest(data, file) {
-    // 1. Cek Field Wajib (General) - Return 'field' name agar frontend tahu mana yang merah
+// --- FUNGSI VALIDASI BACKEND ---
+function validateRequest(data) {
+    // Hapus validasi email & OTP, ganti dengan Phone
     if (!data.reporter_name) return { field: 'reporter_name', message: "Nama wajib diisi." };
+    // Validasi Nomor WhatsApp
+    if (!data.reporter_phone) return { field: 'reporter_phone', message: "Nomor WhatsApp wajib diisi." };
+    if (!data.reporter_phone.startsWith('08')) return { field: 'reporter_phone', message: "Nomor WA harus diawali 08." };
+    if (data.reporter_phone.length > 13) return { field: 'reporter_phone', message: "Nomor WA maksimal 13 digit." };
+
     if (!data.category_id) return { field: 'category_id', message: "Pilih kategori barang." };
     if (!data.item_name) return { field: 'item_name', message: "Nama barang wajib diisi." };
     if (!data.description) return { field: 'description', message: "Deskripsi wajib diisi." };
     if (!data.date_event) return { field: 'date_event', message: "Tanggal wajib diisi." };
     if (!data.location) return { field: 'location', message: "Lokasi wajib diisi." };
-    if (!data.reporter_email) return { field: 'reporter_email', message: "Email wajib diisi." };
-    if (!data.otp_code) return { field: 'otp_code', message: "Kode OTP wajib diisi." };
 
-    // 2. Validasi Identitas Spesifik
+    // Validasi Identitas Spesifik
     const idNum = data.identification_number;
     const len = idNum ? idNum.length : 0;
     
@@ -117,80 +90,69 @@ function validateRequest(data, file) {
     else if (data.reporter_status === 'lainnya') {
         if (len !== 16) return { field: 'identification_number', message: "NIK KTP wajib 16 digit angka!" };
     }
-    else if (data.reporter_status === 'dosen' || data.reporter_status === 'tendik') {
-        if (len < 5 || len > 20) return { field: 'identification_number', message: "NIP/NIK Pegawai tidak valid." };
-    }
-    else if (data.reporter_status === 'foreign_student') {
-        if (len < 5) return { field: 'identification_number', message: "Passport Number terlalu pendek." };
-    }
+    // Tambahkan validasi lain sesuai kebutuhan (Dosen/Tendik/Asing)
 
     return null; // Lolos Validasi
 }
 
-// --- 6. API: SUBMIT FORM PENEMUAN ---
+// --- 5. API: SUBMIT FORM PENEMUAN ---
 app.post('/submit-penemuan', upload.single('item_image'), (req, res) => {
     const data = req.body;
     const file = req.file;
 
-    // 1. Validasi Input Dasar & Identitas
-    const validationError = validateRequest(data, file);
+    // 1. Validasi Input
+    const validationError = validateRequest(data);
     if (validationError) return res.json({ success: false, ...validationError });
 
-    // 2. Cek OTP
-    const checkOtpQuery = `SELECT * FROM verification_codes WHERE email = ? AND otp_code = ? AND expires_at > NOW()`;
-    db.query(checkOtpQuery, [data.reporter_email, data.otp_code], (err, results) => {
-        if (err) return res.json({ success: false, field: 'general', message: "Database Error saat verifikasi OTP." });
+    // 2. Simpan ke Database (Tanpa OTP)
+    // Pastikan tabel database Anda memiliki kolom 'reporter_phone'
+    const imagePath = file ? '/images/uploads/' + file.filename : null;
+    const accessToken = Math.random().toString(36).substring(7);
+    
+    // Query disesuaikan untuk menyimpan No WA ke reporter_phone
+    const insertReportQuery = `INSERT INTO reports (category_id, type, status, reporter_name, reporter_status, identification_number, reporter_phone, item_name, description, location, date_event, image_path, access_token) VALUES (?, 'found', 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    
+    const values = [data.category_id, data.reporter_name, data.reporter_status, data.identification_number, data.reporter_phone, data.item_name, data.description, data.location, data.date_event, imagePath, accessToken];
 
-        if (results.length === 0) {
-            return res.json({ success: false, field: 'otp_code', message: "Kode OTP salah atau sudah kadaluarsa!" });
+    db.query(insertReportQuery, values, (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.json({ success: false, field: 'general', message: "Gagal menyimpan laporan." });
         }
-
-        const imagePath = file ? '/images/uploads/' + file.filename : null;
-        const accessToken = Math.random().toString(36).substring(7);
-        
-        const insertReportQuery = `INSERT INTO reports (category_id, type, status, reporter_name, reporter_status, identification_number, reporter_contact, item_name, description, location, date_event, image_path, access_token) VALUES (?, 'found', 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-        const values = [data.category_id, data.reporter_name, data.reporter_status, data.identification_number, data.reporter_email, data.item_name, data.description, data.location, data.date_event, imagePath, accessToken];
-
-        db.query(insertReportQuery, values, (err, result) => {
-            if (err) return res.json({ success: false, field: 'general', message: "Gagal menyimpan laporan." });
-            res.json({ success: true, message: "Laporan Penemuan Berhasil Disimpan!" });
-        });
+        res.json({ success: true, message: "Laporan Penemuan Berhasil Disimpan!" });
     });
 });
 
-// --- 7. API: SUBMIT FORM KEHILANGAN ---
+// --- 6. API: SUBMIT FORM KEHILANGAN ---
 app.post('/submit-kehilangan', upload.single('item_image'), (req, res) => {
     const data = req.body;
-    const file = req.file;
+    const file = req.file; // File bersifat opsional di form kehilangan
 
-    const validationError = validateRequest(data, file);
+    const validationError = validateRequest(data);
     if (validationError) return res.json({ success: false, ...validationError });
 
-    const checkOtpQuery = `SELECT * FROM verification_codes WHERE email = ? AND otp_code = ? AND expires_at > NOW()`;
-    db.query(checkOtpQuery, [data.reporter_email, data.otp_code], (err, results) => {
-        if (err) return res.json({ success: false, field: 'general', message: "Database Error saat verifikasi OTP." });
+    const imagePath = file ? '/images/uploads/' + file.filename : null;
+    const accessToken = Math.random().toString(36).substring(7);
 
-        if (results.length === 0) {
-            return res.json({ success: false, field: 'otp_code', message: "Kode OTP salah atau sudah kadaluarsa!" });
+    const insertReportQuery = `INSERT INTO reports (category_id, type, status, reporter_name, reporter_status, identification_number, reporter_phone, item_name, description, location, date_event, image_path, access_token) VALUES (?, 'lost', 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    
+    const values = [data.category_id, data.reporter_name, data.reporter_status, data.identification_number, data.reporter_phone, data.item_name, data.description, data.location, data.date_event, imagePath, accessToken];
+
+    db.query(insertReportQuery, values, (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.json({ success: false, field: 'general', message: "Gagal menyimpan laporan." });
         }
-
-        const imagePath = file ? '/images/uploads/' + file.filename : null;
-        const accessToken = Math.random().toString(36).substring(7);
-
-        const insertReportQuery = `INSERT INTO reports (category_id, type, status, reporter_name, reporter_status, identification_number, reporter_contact, item_name, description, location, date_event, image_path, access_token) VALUES (?, 'lost', 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-        const values = [data.category_id, data.reporter_name, data.reporter_status, data.identification_number, data.reporter_email, data.item_name, data.description, data.location, data.date_event, imagePath, accessToken];
-
-        db.query(insertReportQuery, values, (err, result) => {
-            if (err) return res.json({ success: false, field: 'general', message: "Gagal menyimpan laporan." });
-            res.json({ success: true, message: "Laporan Kehilangan Berhasil Disimpan!" });
-        });
+        res.json({ success: true, message: "Laporan Kehilangan Berhasil Disimpan!" });
     });
 });
 
-// --- 8. LIST BARANG TEMUAN ---
+// --- 7. LIST BARANG TEMUAN ---
 app.get('/list-barang-temuan', (req, res) => {
     const searchQuery = req.query.search || '';
     const categoryFilter = req.query.category || '';
+    
+    // Pastikan join dan kolom yang diambil benar
     let sql = `SELECT reports.*, categories.name AS category_name FROM reports LEFT JOIN categories ON reports.category_id = categories.id WHERE reports.type = 'found' AND reports.status != 'rejected'`;
     const queryParams = [];
 

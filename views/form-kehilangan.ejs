@@ -8,6 +8,8 @@
 
 <%- include('partials/header', { title: "Form Kehilangan | Lost & Found UMY", activePage: "layanan-mandiri" }) %>
 
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
 <div class="bg-umygreen text-white py-8">
     <div class="container mx-auto px-6">
         <h1 class="text-3xl font-bold">Lapor Kehilangan Barang</h1>
@@ -18,7 +20,7 @@
 <main class="container mx-auto px-6 py-10 max-w-4xl relative">
     <div class="bg-white p-8 rounded-lg shadow-lg border border-gray-200">
         <form id="form-lapor" enctype="multipart/form-data" novalidate>
-            
+       
             <h2 class="text-xl font-bold text-gray-800 mb-6 border-b pb-2">Identitas Pelapor</h2>
 
             <div class="mb-6">
@@ -27,6 +29,15 @@
                     class="w-full bg-gray-100 border border-gray-300 rounded px-4 py-3 focus:outline-none focus:bg-white focus:border-umygreen transition"
                     placeholder="Masukkan nama lengkap Anda">
                 <p id="error-reporter_name" class="text-red-600 text-sm font-bold mt-2 hidden"></p>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-gray-700 font-bold mb-2">Nomor WhatsApp<span class="text-umyred">*</span></label>
+                <input type="tel" name="reporter_phone" id="input-phone" maxlength="13"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                    class="w-full bg-gray-100 border border-gray-300 rounded px-4 py-3 focus:outline-none focus:bg-white focus:border-umygreen transition"
+                    placeholder="08xxxxxxxxxx (Contoh: 081234567890)">
+                <p id="error-reporter_phone" class="text-red-600 text-sm font-bold mt-2 hidden"></p>
             </div>
 
             <div class="mb-6">
@@ -107,25 +118,12 @@
                 </div>
             </div>
 
-            <h2 class="text-xl font-bold text-gray-800 mb-6 border-b pb-2 pt-4">Verifikasi Kontak</h2>
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2">Email Aktif<span class="text-umyred">*</span> <span class="font-normal text-sm text-gray-500">(Wajib @gmail.com)</span></label>
-                <div class="flex flex-col md:flex-row gap-2">
-                    <input type="email" id="input-email-lost" name="reporter_email" class="w-full bg-gray-100 border border-gray-300 rounded px-4 py-3 focus:outline-none focus:bg-white focus:border-umygreen" placeholder="email@gmail.com">
-                    <button type="button" onclick="validateEmailLost()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-4 rounded border border-gray-300 transition whitespace-nowrap">Kirim Kode</button>
-                </div>
-                <p id="error-reporter_email" class="text-red-600 text-sm font-bold mt-2 hidden"></p>
-                <p id="email-success-msg-lost" class="text-green-600 text-sm font-bold mt-2 hidden"></p>
-            </div>
+            <h2 class="text-xl font-bold text-gray-800 mb-6 border-b pb-2 pt-4">Verifikasi Laporan</h2>
 
             <div class="mb-10">
-                <label class="block text-gray-700 font-bold mb-2">Kode OTP</label>
-                <div class="flex gap-2">
-                    <input type="text" id="input-otp-lost" name="otp_code" maxlength="6" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-gray-100 border border-gray-300 rounded px-4 py-3 focus:outline-none focus:bg-white focus:border-umygreen" placeholder="Masukkan kode 6 digit">
-                    <button type="button" onclick="cekKodeOtpLost()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded border border-gray-300 transition whitespace-nowrap">Verifikasi</button>
-                </div>
-                <p id="error-otp_code" class="text-red-600 text-sm font-bold mt-2 hidden"></p>
-                <p id="otp-msg-lost" class="text-sm font-bold mt-2 hidden"></p>
+                <label class="block text-gray-700 font-bold mb-2">Konfirmasi Keamanan</label>
+                <div class="g-recaptcha" data-sitekey="6LfvKS0sAAAAAMcbAmjk5QulmbPPNvcQkcS1bcGR"></div>
+                <p id="error-recaptcha" class="text-red-600 text-sm font-bold mt-2 hidden">Mohon centang verifikasi "Saya bukan robot".</p>
             </div>
 
             <div class="flex flex-col-reverse md:flex-row justify-end gap-4">
@@ -170,14 +168,12 @@
         }
     }
     
-    // [UPDATE PENTING] Hapus minLength dan Fix Passport Logic
     function updateIdentityRules() {
         const status = document.querySelector('input[name="reporter_status"]:checked').value;
         const label = document.getElementById('label-identitas');
         const input = document.getElementById('input-identitas');
-        input.value = ""; 
+        input.value = "";
         
-        // [UPDATE] HAPUS SEMUA BATASAN BROWSER
         input.removeAttribute('maxlength'); 
         input.removeAttribute('minlength'); 
         input.removeAttribute('oninput'); 
@@ -186,47 +182,28 @@
         input.classList.remove('border-red-500');
 
         if (status === 'mahasiswa') { 
-            label.innerHTML = 'NIM<span class="text-umyred">*</span> (11 Digit)'; 
+            label.innerHTML = 'NIM<span class="text-umyred">*</span> (11 Digit)';
             input.placeholder = 'ex. 20210140001'; 
             input.maxLength = 11; 
-            input.setAttribute('oninput', "this.value = this.value.replace(/[^0-9]/g, '')"); // Angka
+            input.setAttribute('oninput', "this.value = this.value.replace(/[^0-9]/g, '')");
         }
         else if (status === 'lainnya') { 
-            label.innerHTML = 'NIK KTP<span class="text-umyred">*</span> (16 Digit)'; 
+            label.innerHTML = 'NIK KTP<span class="text-umyred">*</span> (16 Digit)';
             input.placeholder = '16 digit NIK'; 
             input.maxLength = 16; 
-            input.setAttribute('oninput', "this.value = this.value.replace(/[^0-9]/g, '')"); // Angka
+            input.setAttribute('oninput', "this.value = this.value.replace(/[^0-9]/g, '')");
         }
         else if (status === 'foreign_student') {
-            label.innerHTML = 'Passport Number<span class="text-umyred">*</span>'; 
+            label.innerHTML = 'Passport Number<span class="text-umyred">*</span>';
             input.placeholder = 'Enter your Passport Number'; 
-            input.maxLength = 10; 
-            // [FIX] Paspor bisa huruf, jadi HAPUS oninput replace angka
+            input.maxLength = 20; 
         }
         else { 
-            label.innerHTML = 'NIP / NIK Pegawai<span class="text-umyred">*</span>'; 
+            label.innerHTML = 'NIP / NIK Pegawai<span class="text-umyred">*</span>';
             input.placeholder = 'Nomor Identitas'; 
             input.maxLength = 18; 
-            input.setAttribute('oninput', "this.value = this.value.replace(/[^0-9]/g, '')"); // Angka
+            input.setAttribute('oninput', "this.value = this.value.replace(/[^0-9]/g, '')");
         }
-    }
-    
-    function validateEmailLost() { 
-        const email = document.getElementById('input-email-lost').value;
-        document.getElementById('error-reporter_email').classList.add('hidden');
-        if (!email) { document.getElementById('error-reporter_email').innerText="Email wajib diisi"; document.getElementById('error-reporter_email').classList.remove('hidden'); return; }
-        
-        fetch('/api/send-otp', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({email}) })
-        .then(res=>res.json()).then(data=>{ if(data.success){ document.getElementById('email-success-msg-lost').classList.remove('hidden'); document.getElementById('email-success-msg-lost').innerText = 'Kode terkirim! Cek terminal.'; } else { alert(data.message); } });
-    }
-    function cekKodeOtpLost() { 
-        const email = document.getElementById('input-email-lost').value;
-        const otp = document.getElementById('input-otp-lost').value;
-        fetch('/api/verify-otp', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({email, otp_code: otp}) })
-        .then(res=>res.json()).then(data=>{ 
-            const msg = document.getElementById('otp-msg-lost'); msg.classList.remove('hidden', 'text-red-600', 'text-green-600');
-            msg.innerText = data.message; msg.classList.add(data.success ? 'text-green-600' : 'text-red-600');
-        });
     }
 
     document.getElementById('form-lapor').addEventListener('submit', function(e) {
@@ -234,6 +211,38 @@
         
         document.querySelectorAll('p[id^="error-"]').forEach(el => el.classList.add('hidden'));
         document.querySelectorAll('input, textarea, select').forEach(el => el.classList.remove('border-red-500'));
+
+        // --- VALIDASI WHATSAPP ---
+        const phoneInput = document.getElementById('input-phone');
+        const phoneError = document.getElementById('error-reporter_phone');
+        const phoneVal = phoneInput.value;
+
+        if (!phoneVal) {
+            phoneError.innerText = "❌ Nomor WhatsApp wajib diisi.";
+            phoneError.classList.remove('hidden');
+            phoneInput.classList.add('border-red-500');
+            phoneInput.focus();
+            return;
+        }
+        if (!phoneVal.startsWith('08')) {
+            phoneError.innerText = "❌ Nomor WhatsApp harus diawali dengan '08'.";
+            phoneError.classList.remove('hidden');
+            phoneInput.classList.add('border-red-500');
+            return;
+        }
+        if (phoneVal.length < 10) {
+            phoneError.innerText = "❌ Nomor WhatsApp terlalu pendek (min 10 digit).";
+            phoneError.classList.remove('hidden');
+            phoneInput.classList.add('border-red-500');
+            return;
+        }
+
+        // --- VALIDASI RECAPTCHA ---
+        const recaptchaResponse = grecaptcha.getResponse();
+        if (recaptchaResponse.length === 0) {
+            document.getElementById('error-recaptcha').classList.remove('hidden');
+            return;
+        }
 
         const formData = new FormData(this);
         fetch('/submit-kehilangan', { method: 'POST', body: formData })
